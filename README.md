@@ -48,4 +48,4 @@ export default function App() {
 
 ## Development
 
-Only shows in development mode (`NODE_ENV === "development"`). Now the code blocks should be properly formatted. Let me know if you'd like any changes to the content!
+Only shows in development mode (`NODE_ENV === "development"`).

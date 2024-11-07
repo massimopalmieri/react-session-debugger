@@ -1,8 +1,9 @@
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { z } from "zod";
 import Prism from "prismjs";
-import "prismjs/components/prism-json";
+import "prismjs/components/prism-json.js";
 import "prismjs/themes/prism.css";
+import "./styles.css";
 
 const Editor = React.lazy(() => import("react-simple-code-editor"));
 
@@ -13,20 +14,12 @@ interface SessionStorageDebuggerProps {
 }
 
 export function SessionStorageDebugger({
-  schema = z
-    .object({
-      name: z.string({ required_error: "name is required" }),
-      age: z.number().optional(),
-    })
-    .strict(),
+  schema,
   defaultValue = { name: "John Doe", age: 30 },
   storageKey = "userData",
 }: SessionStorageDebuggerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [jsonValue, setJsonValue] = useState<string>(() => {
-    if (typeof window === "undefined")
-      return JSON.stringify(defaultValue, null, 2);
-
     const stored = sessionStorage.getItem(storageKey);
     if (stored) {
       return JSON.stringify(JSON.parse(stored), null, 2);
@@ -36,10 +29,36 @@ export function SessionStorageDebugger({
   const [error, setError] = useState<string[] | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    };
+
+    if (isOpen) {
+      document.addEventListener('keydown', handleEscape);
+    }
+
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen]);
+
+  const handleOutsideClick = (event: React.MouseEvent) => {
+    if (event.target === event.currentTarget) {
+      setIsOpen(false);
+    }
+  };
+
   function validateJson(value: string) {
     try {
       const parsed = JSON.parse(value);
-      schema.parse(parsed);
+
+      if (schema) {
+        schema.parse(parsed);
+      }
+
       setError(null);
       return true;
     } catch (error) {
@@ -70,15 +89,15 @@ export function SessionStorageDebugger({
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50">
+    <div className="ssd-fixed ssd-bottom-4 ssd-right-4 ssd-z-[9999] ssd-font-sans">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-gray-800 text-white rounded-full p-3 shadow-lg hover:bg-gray-700"
+        className="ssd-flex ssd-items-center ssd-justify-center ssd-bg-blue-600 ssd-text-white ssd-rounded-full ssd-p-3.5 ssd-shadow-lg hover:ssd-bg-blue-700 ssd-transition-all ssd-duration-200 ssd-ease-in-out hover:ssd-shadow-xl ssd-border-0 ssd-cursor-pointer ssd-outline-none focus:ssd-outline-none"
         title="Session Storage Debugger"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          className="h-6 w-6"
+          className="ssd-h-6 ssd-w-6 ssd-text-white"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
@@ -93,38 +112,42 @@ export function SessionStorageDebugger({
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-2xl m-4 p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold">
+        <div 
+          className="ssd-text-left ssd-fixed ssd-inset-0 ssd-bg-gray-900/50 ssd-backdrop-blur-sm ssd-flex ssd-items-center ssd-justify-center ssd-z-[9999] ssd-font-sans"
+          onClick={handleOutsideClick}
+        >
+          <div className="ssd-bg-white ssd-rounded-xl ssd-shadow-2xl ssd-w-full ssd-max-w-2xl ssd-m-4 ssd-p-6 ssd-relative ssd-animate-fadeIn">
+            <div className="ssd-flex ssd-justify-between ssd-items-center ssd-mb-6">
+              <h2 className="ssd-text-xl ssd-font-semibold ssd-text-gray-900 ssd-m-0 ssd-font-sans">
                 Session Storage Debugger
               </h2>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-gray-500 hover:text-gray-700"
+                className="ssd-flex ssd-items-center ssd-justify-center ssd-p-2 ssd-rounded-full ssd-text-gray-500 hover:ssd-text-gray-700 ssd-bg-gray-50 hover:ssd-bg-gray-100 ssd-transition-all ssd-border-0 ssd-cursor-pointer ssd-outline-none focus:ssd-outline-none"
+                type="button"
               >
                 <svg
-                  className="w-6 h-6"
+                  className="ssd-w-5 ssd-h-5 ssd-text-current"
                   fill="none"
-                  stroke="currentColor"
                   viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
                 >
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    strokeWidth={2}
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <label className="block text-sm font-medium text-gray-700">
+            <form onSubmit={handleSubmit} className="ssd-space-y-5">
+              <div className="ssd-space-y-3">
+                <label className="ssd-block ssd-text-sm ssd-font-medium ssd-text-gray-700 ssd-font-sans">
                   JSON Input
                 </label>
-                <div className="w-full border rounded-md overflow-hidden">
+                <div className="ssd-w-full ssd-border ssd-border-gray-200 ssd-rounded-lg ssd-overflow-hidden ssd-shadow-sm ssd-bg-gray-50">
                   <Suspense>
                     <Editor
                       value={jsonValue}
@@ -142,27 +165,30 @@ export function SessionStorageDebugger({
                             "json"
                           );
                         } catch {
-                          return `<span class="text-gray-900">${code}</span>`;
+                          return `<span class="ssd-text-gray-900">${code}</span>`;
                         }
                       }}
-                      padding={10}
+                      padding={16}
                       style={{
                         fontFamily: '"Fira code", "Fira Mono", monospace',
                         fontSize: 14,
                         minHeight: "200px",
                         caretColor: "black",
                         color: "rgb(17 24 39)",
+                        backgroundColor: "rgb(249 250 251)",
+                        border: "none",
+                        outline: "none",
                       }}
-                      className="w-full focus:outline-none"
+                      className="ssd-w-full ssd-focus:outline-none"
                     />
                   </Suspense>
                 </div>
               </div>
 
               {error && (
-                <div className="p-3 bg-red-50 border border-red-200 rounded-md">
+                <div className="ssd-p-4 ssd-bg-red-50 ssd-border ssd-border-red-200 ssd-rounded-lg ssd-shadow-sm ssd-font-sans">
                   {error.map((err, index) => (
-                    <div key={index} className="text-red-600 text-sm">
+                    <div key={index} className="ssd-text-red-600 ssd-text-sm">
                       {err}
                     </div>
                   ))}
@@ -170,14 +196,14 @@ export function SessionStorageDebugger({
               )}
 
               {success && (
-                <div className="p-3 bg-green-50 border border-green-200 rounded-md text-green-600 text-sm">
+                <div className="ssd-p-4 ssd-bg-green-50 ssd-border ssd-border-green-200 ssd-rounded-lg ssd-shadow-sm ssd-text-green-600 ssd-text-sm ssd-font-sans">
                   {success}
                 </div>
               )}
 
               <button
                 type="submit"
-                className="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors disabled:opacity-50"
+                className="ssd-w-full ssd-px-4 ssd-py-2.5 ssd-bg-blue-600 ssd-text-white ssd-rounded-lg hover:ssd-bg-blue-700 ssd-transition-colors disabled:ssd-opacity-50 ssd-shadow-sm hover:ssd-shadow ssd-font-medium"
                 disabled={!!error}
               >
                 Save to Session Storage
