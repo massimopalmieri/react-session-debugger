@@ -1,0 +1,33 @@
+# Source files
+src/
+
+# Config files
+tsconfig.json
+tsup.config.ts
+.prettierrc
+.eslintrc
+.gitignore
+
+# Development files
+tests/
+examples/
+docs/
+
+# Git files
+.git/
+.github/
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# CI files
+.travis.yml
+.gitlab-ci.yml
+.github/workflows/
+
+# Misc
+*.log
+.DS_Store
+coverage/
