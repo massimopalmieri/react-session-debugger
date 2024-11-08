@@ -1,6 +1,6 @@
 import React, { Suspense, useState, useEffect } from "react";
 import { z } from "zod";
-import Editor from "react-simple-code-editor";
+import * as Editor from "react-simple-code-editor";
 import Prism from "prismjs";
 import "prismjs/components/prism-json.js";
 import "prismjs/themes/prism.css";
@@ -148,7 +148,7 @@ export function SessionStorageDebugger({
                 </label>
                 <div className="ssd-w-full ssd-border ssd-border-gray-200 ssd-rounded-lg ssd-overflow-hidden ssd-shadow-sm ssd-bg-gray-50">
                   <Suspense>
-                    <Editor
+                    <Editor.default
                       value={jsonValue}
                       onValueChange={(value) => {
                         setJsonValue(value);
