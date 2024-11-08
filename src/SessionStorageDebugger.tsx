@@ -1,11 +1,10 @@
 import React, { Suspense, useState, useEffect } from "react";
 import { z } from "zod";
+import Editor from "react-simple-code-editor";
 import Prism from "prismjs";
 import "prismjs/components/prism-json.js";
 import "prismjs/themes/prism.css";
 import "./styles.css";
-
-const Editor = React.lazy(() => import("react-simple-code-editor"));
 
 interface SessionStorageDebuggerProps {
   schema?: z.ZodObject<any, any>;
