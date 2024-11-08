@@ -30,26 +30,26 @@ export function SessionStorageDebugger({
   const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
-    const handleEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
         setIsOpen(false);
       }
-    };
+    }
 
     if (isOpen) {
-      document.addEventListener('keydown', handleEscape);
+      document.addEventListener("keydown", handleEscape);
     }
 
     return () => {
-      document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener("keydown", handleEscape);
     };
   }, [isOpen]);
 
-  const handleOutsideClick = (event: React.MouseEvent) => {
+  function handleOutsideClick(event: React.MouseEvent) {
     if (event.target === event.currentTarget) {
       setIsOpen(false);
     }
-  };
+  }
 
   function validateJson(value: string) {
     try {
@@ -112,7 +112,7 @@ export function SessionStorageDebugger({
       </button>
 
       {isOpen && (
-        <div 
+        <div
           className="ssd-text-left ssd-fixed ssd-inset-0 ssd-bg-gray-900/50 ssd-backdrop-blur-sm ssd-flex ssd-items-center ssd-justify-center ssd-z-[9999] ssd-font-sans"
           onClick={handleOutsideClick}
         >
