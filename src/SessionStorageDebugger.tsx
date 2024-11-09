@@ -1,6 +1,8 @@
 import React, { Suspense, useState, useEffect } from "react";
 import { z } from "zod";
-import * as Editor from "react-simple-code-editor";
+// import * as Editor from "react-simple-code-editor";
+const Editor = require("react-simple-code-editor").default;
+
 import Prism from "prismjs";
 import "prismjs/components/prism-json.js";
 import "prismjs/themes/prism.css";
